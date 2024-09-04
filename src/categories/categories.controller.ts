@@ -29,6 +29,18 @@ export class CategoriesController {
     return this.categoriesService.findAllChildren(parentId);
   }
 
+  @Get('all-with-children')
+  async findAllWithChildren(): Promise<Category[]> {
+    return this.categoriesService.findAllWithChildren();
+  }
+
+  // kiểm thử findAllWithChildren trong service đúng không nhỉ
+  @Get('with-children')
+  async getCategoriesWithChildren() {
+    const categories = await this.categoriesService.findAllWithChildren();
+    return categories;
+  }
+
   // @Get('hierarchy')
   // async getHierarchy(@Query('parentId') parentId: string): Promise<CategoryDocument[]> {
   //   return this.categoriesService.getHierarchy(parentId || null);

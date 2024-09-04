@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type CategoryDocument = Category & Document;
 
@@ -20,6 +19,9 @@ export class Category {
 
   @Prop({ default: Date.now })
   updatedAt: Date;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Category' }] })
+  children?: CategoryDocument[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

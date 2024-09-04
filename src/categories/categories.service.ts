@@ -21,7 +21,7 @@ export class CategoriesService {
   async findByParentId(parentId: string): Promise<Category[]> {
     return this.categoryModel.find({ parentId }).exec();
   }
-  
+
   async findAllChildren(parentId: string): Promise<CategoryDocument[]> {
     // Tìm tất cả các danh mục con trực tiếp
     const children = await this.categoryModel.find({ parentId }).exec();
@@ -37,20 +37,46 @@ export class CategoriesService {
   
     return allChildren;
   }
-  
 
-  // async getHierarchy(parentId: string | null): Promise<CategoryDocument[]> {
-  //   // Tìm tất cả các danh mục con của parentId
-  //   const categories = await this.categoryModel.find({ parentId }).exec();
+  async findAllWithChildren(): Promise<CategoryDocument[]> {
+    const categories = await this.categoryModel.find({}).exec();
+    // console.log('Categories:', categories); // Kiểm tra dữ liệu lấy được từ CSDL
+  
+    const map = new Map<string, CategoryDocument>();
+    categories.forEach(category => map.set(category._id.toString(), category));
+  
+    // const result: CategoryDocument[] = [];
+  
+    categories.forEach(category => {
+      if (category.parentId) {
+        const parent = map.get(category.parentId.toString());
+        if (parent) {
+          parent.children = parent.children || [];
+          parent.children.push(category);
+        }
+      } else {
+        result.push(category);
+      }
+    });
+  
+    // Kiểm tra kết quả phân cấp
+    console.log('Result:', result);
+  
+    return result;
+  }
+
+  // Để xây dựng cấu trúc phân cấp, bạn cần thêm phương thức này nếu cần:
+  async getHierarchy(parentId: string | null): Promise<CategoryDocument[]> {
+    // Tìm tất cả các danh mục con của parentId
+    const categories = await this.categoryModel.find({ parentId }).exec();
     
-  //   // Xây dựng cấu trúc phân cấp
-  //   for (const category of categories) {
-  //     category.children = await this.getHierarchy(category._id.toString());
-  //   }
+    // Xây dựng cấu trúc phân cấp
+    for (const category of categories) {
+      category.children = await this.getHierarchy(category._id.toString());
+    }
   
-  //   return categories;
-  // }
-  
+    return categories;
+  }
 
   async findOne(id: string): Promise<Category> {
     const category = await this.categoryModel.findById(id).exec();
