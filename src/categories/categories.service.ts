@@ -40,12 +40,12 @@ export class CategoriesService {
 
   async findAllWithChildren(): Promise<CategoryDocument[]> {
     const categories = await this.categoryModel.find({}).exec();
-    // console.log('Categories:', categories); // Kiểm tra dữ liệu lấy được từ CSDL
+    console.log('Categories:', categories); // Kiểm tra dữ liệu lấy được từ CSDL
   
     const map = new Map<string, CategoryDocument>();
     categories.forEach(category => map.set(category._id.toString(), category));
   
-    // const result: CategoryDocument[] = [];
+    const result: CategoryDocument[] = [];
   
     categories.forEach(category => {
       if (category.parentId) {
